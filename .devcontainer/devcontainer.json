@@ -23,10 +23,8 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"updateContentCommand": "pnpm install",
-	"postAttachCommand": {
-		"nextJs": "pnpm run dev",
-		"sst": "pnpm run dev" // requires credentials to be available at start!
-	},
+	"postAttachCommand": "pnpm run dev", // requires credentials to be available at boot time!
+	
 
 	// Configure tool-specific properties.
 	"customizations": {
