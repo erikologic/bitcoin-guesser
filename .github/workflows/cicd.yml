@@ -29,7 +29,7 @@ jobs:
           role-duration-seconds: 900 #adjust as needed for your build time
           aws-region: eu-west-1
       # CI
-      - name: Cache playwright binaries
+      - name: Cache Playwright Browsers
         uses: actions/cache@v3
         id: playwright-cache
         with:
@@ -40,7 +40,8 @@ jobs:
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm exec playwright test
-      - uses: actions/upload-artifact@v4
+      - name: Store Playwright tests artifacts
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
