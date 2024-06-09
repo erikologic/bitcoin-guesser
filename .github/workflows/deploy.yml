@@ -26,7 +26,7 @@ jobs:
           version: 9
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${vars.AWS_ACCOUNT_ID}:role/GitHub
+          role-to-assume: arn:aws:iam::${{vars.AWS_ACCOUNT_ID}}:role/GitHub
           role-duration-seconds: 900 #adjust as needed for your build time
           aws-region: eu-west-1
       - run: pnpm install 
