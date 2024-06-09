@@ -29,6 +29,7 @@ jobs:
           role-duration-seconds: 900 #adjust as needed for your build time
           aws-region: eu-west-1
       # CI
+      - run: timeout 10s pnpm run dev
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
