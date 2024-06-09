@@ -1,7 +1,7 @@
 import { Duration } from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { SSTConfig } from "sst";
-import { NextjsSite, StackContext } from "sst/constructs";
+import { NextjsSite, StackContext, Table } from "sst/constructs";
 
 const github = {
   organization: "erikologic",
@@ -24,7 +24,9 @@ function IAM({ app, stack }: StackContext) {
       description: "Role assumed for deploying from GitHub CI using AWS CDK",
       roleName: "GitHub", // Change this to match the role name in the GitHub workflow file
       maxSessionDuration: Duration.hours(1),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AdministratorAccess")],
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AdministratorAccess"),
+      ],
     });
   }
 }
@@ -38,7 +40,15 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, "site");
+      const table = new Table(stack, "scoreboard", {
+        fields: {
+          pk: "string",
+          sk: "string",
+        },
+        primaryIndex: { partitionKey: "pk", sortKey: "sk" },
+      });
+
+      const site = new NextjsSite(stack, "site", { bind: [table] });
 
       stack.addOutputs({
         SiteUrl: site.url,
