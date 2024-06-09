@@ -1,0 +1,33 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main ]
+
+
+
+concurrency:
+  group: merge-${{ github.ref }}
+
+permissions:
+  id-token: write 
+  contents: read 
+
+jobs:
+  DeployApp:
+    runs-on: ubuntu-latest
+    env:
+    #Define your envs needed for static generation:
+    # ENV_NAME: ${{ secrets.ENV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${vars.AWS_ACCOUNT_ID}:role/GitHub
+          role-duration-seconds: 900 #adjust as needed for your build time
+          aws-region: eu-west-1
+      - run: pnpm install 
+      - run: npx sst deploy --stage prod
