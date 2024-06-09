@@ -1,9 +1,7 @@
-name: Playwright Tests
+name: Deploy
 on:
   push:
     branches: [ main ]
-
-
 
 concurrency:
   group: merge-${{ github.ref }}
