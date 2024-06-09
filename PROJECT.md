@@ -44,7 +44,8 @@ Right now I would assume the former, and I would feel allowed to commit any sin 
 SOLUTION SPACE  
 Whatever the case, VCS is a must.  
 I am going to base the project on GitHub using Codespaces, so that it should be very easy to pick this up and develop.  
-Code will be mostly a copy & paste of examplers projects and blog posts found around the web, so quality will be low.
+Code will be mostly a copy & paste of examplers projects and blog posts found around the web, so quality will be low.  
+I will use React (NextJs) deployed on AWS to adhere with "company standards", but also cause is likely the option with most ready-to-use examples available.  
 
 ### Usability
 _Who are the user (humans/systems)? What's the likely scenario in which they would be using this service? Do they have special needs?_
