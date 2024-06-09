@@ -8,25 +8,7 @@ const github = {
   repository: "bitcoin-guesser",
 };
 
-export default {
-  config(_input) {
-    return {
-      name: "bitcoin-guesser",
-      region: "eu-west-1",
-    };
-  },
-  stacks(app) {
-    app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, "site");
-
-      stack.addOutputs({
-        SiteUrl: site.url,
-      });
-    });
-  },
-} satisfies SSTConfig;
-
-export function IAM({ app, stack }: StackContext) {
+function IAM({ app, stack }: StackContext) {
   if (app.stage === "prod") {
     const provider = new iam.OpenIdConnectProvider(stack, "GitHub", {
       url: "https://token.actions.githubusercontent.com",
@@ -89,3 +71,24 @@ export function IAM({ app, stack }: StackContext) {
     });
   }
 }
+
+
+export default {
+  config(_input) {
+    return {
+      name: "bitcoin-guesser",
+      region: "eu-west-1",
+    };
+  },
+  stacks(app) {
+    app.stack(function Site({ stack }) {
+      const site = new NextjsSite(stack, "site");
+
+      stack.addOutputs({
+        SiteUrl: site.url,
+      });
+    });
+    app.stack(IAM);
+  },
+} satisfies SSTConfig;
+
