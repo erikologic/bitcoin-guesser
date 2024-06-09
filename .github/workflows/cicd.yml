@@ -29,7 +29,14 @@ jobs:
           role-duration-seconds: 900 #adjust as needed for your build time
           aws-region: eu-west-1
       # CI
-      - name: Install Playwright Browsers
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm exec playwright test
