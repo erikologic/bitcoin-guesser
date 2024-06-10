@@ -48,7 +48,10 @@ export default {
         primaryIndex: { partitionKey: "pk", sortKey: "sk" },
       });
 
-      const site = new NextjsSite(stack, "site", { bind: [table] });
+      const site = new NextjsSite(stack, "site", {
+        bind: [table],
+        environment: { COINCAP_API_KEY: process.env.COINCAP_API_KEY! },
+      });
 
       stack.addOutputs({
         SiteUrl: site.url,

@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      COINCAP_API_KEY: ${{ secrets.COINCAP_API_KEY }}
     steps:
       # Prepare
       - uses: actions/checkout@v4
