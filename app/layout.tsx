@@ -16,7 +16,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <header>
+          <h1>Bitcoin Guesser</h1>
+          <section aria-label="Score">
+      			<h2>Score:</h2>
+            <p>0</p>
+		      </section>
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
