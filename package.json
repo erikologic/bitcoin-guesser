@@ -6,7 +6,7 @@
     "dev": "sst bind --stage node next dev",
     "dev:sst": "sst dev",
     "deploy:prod": "sst deploy --stage prod",
-    "build": "next build",
+    "build": "sst bind --stage prod next build",
     "start": "next start",
     "lint": "next lint",
     "test": "playwright test"
