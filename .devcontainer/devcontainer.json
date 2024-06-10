@@ -22,7 +22,7 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"updateContentCommand": "pnpm install && exec playwright install-deps ",
+	"updateContentCommand": "pnpm install && pnpm exec playwright install-deps ",
 	"postAttachCommand": "pnpm run dev", // requires credentials to be available at boot time!
 	
 
