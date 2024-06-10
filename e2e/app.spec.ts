@@ -4,9 +4,6 @@ test("the app", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Bitcoin Guesser/);
 
-  // TODO delete this stuff
-  await expect(page.getByText("hello world from DDB")).toBeVisible(); // This is a temp item I manually added to the table
-
   // The player can at all times see their current score
   // New players start with a score of 0
   await expect(
