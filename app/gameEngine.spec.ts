@@ -5,7 +5,6 @@
 // Players can only make one guess at a time
 // New players start with a score of 0
 
-
 function getGame() {
   return {
     getScore: () => 0,
@@ -21,4 +20,25 @@ test("player can see their current score", () => {
 test("player can see the latest available BTC price in USD", () => {
   const game = getGame();
   expect(game.getPrice()).toEqual(1000);
-})
+});
+
+type Guess = "up" | "down";
+
+class Game {
+  private guess: Guess | undefined;
+
+  makeGuess(guess: Guess) {
+    this.guess = guess;
+  }
+
+  canGuess() {
+    return !this.guess;
+  }
+}
+
+test("after a guess is entered the player cannot make new guesses until the existing guess is resolved", () => {
+  const game = new Game();
+  expect(game.canGuess()).toBeTruthy();
+  game.makeGuess("up");
+  expect(game.canGuess()).toBeFalsy();
+});
