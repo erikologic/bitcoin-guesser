@@ -11,6 +11,11 @@ test("the app", async ({ page }) => {
   ).toBeVisible();
 
   // The player can at all times see the latest available BTC price in USD
+  const currentPrice = await page
+    .getByRole("status", { name: "Price" })
+    .textContent();
+  expect(currentPrice).toMatch(/\$[0-9.]+/);
+
   // The player can choose to enter a guess of either “up” or “down“
   // Players can only make one guess at a time
   // After a guess is entered the player cannot make new guesses until the existing guess is resolved
