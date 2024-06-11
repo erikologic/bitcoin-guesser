@@ -21,7 +21,8 @@ export const getDDB = cache(async () => {
 
 export const getCurrentScore = cache(async () => {
   const id = cookies().get("id")?.value;
-  if (!id) throw new Error("No id found in cookies");
+  if (!id) return 0;
+
   const command = new QueryCommand({
     TableName: Table.scoreboard.tableName,
     KeyConditionExpression: "pk = :pk AND sk = :sk",

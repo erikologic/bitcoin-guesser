@@ -10,16 +10,15 @@ export default async function Home() {
     <>
     <header>
       <h1>Bitcoin Guesser</h1>
-      <section aria-label="Score">
-        <h2>Score:</h2>
-        <p>{currentScore}</p>
-      </section>
-    </header>
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <p className="">
-          Bro: {btc.data.rateUsd}
-        </p>
-    </main>
+      </header>
+      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <div role="status" aria-live="polite" aria-label="Score">
+          Current Score: {currentScore}
+        </div>
+        <span role="status" aria-live="polite" aria-label="BTC/USD price">
+            BTC Price: ${btc.data.rateUsd}
+        </span>
+      </main>
     </>
     
   );

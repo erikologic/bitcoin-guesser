@@ -7,7 +7,7 @@ test("the app", async ({ page }) => {
   // The player can at all times see their current score
   // New players start with a score of 0
   await expect(
-    page.getByRole("region", { name: "Score" }).getByText("0")
+    page.getByRole("status", { name: "Score" }).getByText("0")
   ).toBeVisible();
 
   // The player can at all times see the latest available BTC price in USD
