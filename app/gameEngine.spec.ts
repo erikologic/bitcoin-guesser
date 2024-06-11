@@ -15,7 +15,9 @@ class Game {
     private now: () => number,
     private priceGetter: () => Promise<number>,
     private guessGetter: () => Promise<Guess | null>,
-    private guessPutter: (guess: Guess) => void
+    private guessPutter: (guess: Guess) => void,
+    private scoreGetter: () => Promise<number>,
+    private scorePutter: (score: number) => void
   ) {}
 
   async makeGuess(guess: GuessType): Promise<void> {
@@ -26,8 +28,8 @@ class Game {
     });
   }
 
-  getScore(): number {
-    return 0;
+  getScore(): Promise<number> {
+    return this.scoreGetter();
   }
 
   getPrice(): Promise<number> {
@@ -49,18 +51,28 @@ class Game {
   }
 }
 
-// TODO go repo here too
-test("player can see their current score", () => {
+test("player can see their current score", async () => {
   const now = jest.fn(() => 0);
   const priceGetter = jest.fn().mockResolvedValue(1000);
   const guessGetter = jest.fn().mockResolvedValue(null);
   const guessPutter = jest.fn(async (guess) => {
     guessGetter.mockResolvedValue(guess);
   });
+  const scoreGetter = jest.fn().mockResolvedValue(0);
+  const scorePutter = jest.fn(async (score) => {
+    scoreGetter.mockResolvedValue(score);
+  });
 
-  const game = new Game(now, priceGetter, guessGetter, guessPutter);
+  const game = new Game(
+    now,
+    priceGetter,
+    guessGetter,
+    guessPutter,
+    scoreGetter,
+    scorePutter
+  );
 
-  expect(game.getScore()).toEqual(0);
+  await expect(game.getScore()).resolves.toEqual(0);
 });
 
 test("player can see the latest available BTC price in USD", async () => {
@@ -70,8 +82,19 @@ test("player can see the latest available BTC price in USD", async () => {
   const guessPutter = jest.fn(async (guess) => {
     guessGetter.mockResolvedValue(guess);
   });
+  const scoreGetter = jest.fn().mockResolvedValue(0);
+  const scorePutter = jest.fn(async (score) => {
+    scoreGetter.mockResolvedValue(score);
+  });
 
-  const game = new Game(now, priceGetter, guessGetter, guessPutter);
+  const game = new Game(
+    now,
+    priceGetter,
+    guessGetter,
+    guessPutter,
+    scoreGetter,
+    scorePutter
+  );
 
   await expect(game.getPrice()).resolves.toEqual(1000);
 });
@@ -83,9 +106,19 @@ test("The guess is resolved when the price changes and at least 60 seconds have 
   const guessPutter = jest.fn(async (guess) => {
     guessGetter.mockResolvedValue(guess);
   });
+  const scoreGetter = jest.fn().mockResolvedValue(0);
+  const scorePutter = jest.fn(async (score) => {
+    scoreGetter.mockResolvedValue(score);
+  });
 
-  const game = new Game(now, priceGetter, guessGetter, guessPutter);
-
+  const game = new Game(
+    now,
+    priceGetter,
+    guessGetter,
+    guessPutter,
+    scoreGetter,
+    scorePutter
+  );
   await expect(game.canGuess()).resolves.toBeTruthy();
   await game.makeGuess("up");
   await expect(game.canGuess()).resolves.toBeFalsy();
