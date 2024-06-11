@@ -45,11 +45,9 @@
 				"redhat.vscode-yaml",
 				"rockingskier.copy-copy-paste",
 				"SimonSiefke.svg-preview",
-				// "svelte.svelte-vscode",
 				"VisualStudioExptTeam.intellicode-api-usage-examples",
 				"wix.vscode-import-cost",
 				"YoavBls.pretty-ts-errors",
-				// "vitest.explorer",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"eamodio.gitlens",
 				"toba.vsfire",
@@ -58,7 +56,7 @@
 				"rvest.vs-code-prettier-eslint",
 				"esbenp.prettier-vscode",
 				"timonwong.shellcheck",
-				// "fivethree.vscode-svelte-snippets"
+				"Orta.vscode-jest"
 			]
 		}
 	}
