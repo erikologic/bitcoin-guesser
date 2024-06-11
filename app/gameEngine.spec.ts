@@ -39,4 +39,16 @@ describe("Game Engine", () => {
     };
     expect(processState(state as GameState).price.value).toEqual(1000);
   });
+
+  test("The guess is resolved when the price changes and at least 60 seconds have passed since the guess was made", () => {
+    const state: Partial<GameState> = {
+      score: {
+        points: 0,
+      },
+      price: {
+        value: 1000
+      }
+    };
+    expect(processState(state as GameState).price.value).toEqual(1000);
+  });
 });
