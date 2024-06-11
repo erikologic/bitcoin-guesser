@@ -17,8 +17,8 @@ test("the app", async ({ page }) => {
   expect(currentPrice).toMatch(/\$[0-9.]+/);
 
   // The player can choose to enter a guess of either “up” or “down“
-  await expect(page.getByRole("button", { name: "up" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "down" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "up" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "down" })).toBeEnabled();
 
   // Players can only make one guess at a time
   // After a guess is entered the player cannot make new guesses until the existing guess is resolved
