@@ -18,6 +18,8 @@ export default async function Home() {
         <div role="status" aria-label="Price">
             BTC Price: ${btc.data.rateUsd}
         </div>
+        <button aria-label="up">Up</button>
+        <button aria-label="down">Down</button>
       </main>
     </>
     
