@@ -24,7 +24,11 @@ export class Game {
     });
   }
 
-  getScore(): Promise<number> {
+  
+
+  async getScore(): Promise<number> {
+    await this._resolveGuess();
+
     return this.scoreGetter();
   }
 
