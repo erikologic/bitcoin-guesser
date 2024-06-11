@@ -3,128 +3,54 @@
 // If the guess is correct (up = price went higher, down = price went lower), the user gets 1 point added to their score. If the guess is incorrect, the user loses 1 point.
 // Players can only make one guess at a time
 
-type GuessType = "up" | "down";
+import { Game } from "./gameEngine";
 
-interface Guess {
-  type: GuessType;
-  price: number;
-  timestamp: number;
-}
-class Game {
-  constructor(
-    private now: () => number,
-    private priceGetter: () => Promise<number>,
-    private guessGetter: () => Promise<Guess | null>,
-    private guessPutter: (guess: Guess) => void,
-    private scoreGetter: () => Promise<number>,
-    private scorePutter: (score: number) => void
-  ) {}
+describe("Game", () => {
+  const now = jest.fn();
+  const priceGetter = jest.fn();
+  const guessGetter = jest.fn();
+  const guessPutter = jest.fn();
+  const scoreGetter = jest.fn();
+  const scorePutter = jest.fn();
 
-  async makeGuess(guess: GuessType): Promise<void> {
-    await this.guessPutter({
-      type: guess,
-      price: await this.priceGetter(),
-      timestamp: this.now(),
+  const game = new Game(
+    now,
+    priceGetter,
+    guessGetter,
+    guessPutter,
+    scoreGetter,
+    scorePutter
+  );
+
+  beforeEach(() => {
+    now.mockImplementation(() => 0);
+    priceGetter.mockResolvedValue(1000);
+    guessGetter.mockResolvedValue(null);
+    guessPutter.mockImplementation(async (guess) => {
+      guessGetter.mockResolvedValue(guess);
     });
-  }
-
-  getScore(): Promise<number> {
-    return this.scoreGetter();
-  }
-
-  getPrice(): Promise<number> {
-    return this.priceGetter();
-  }
-
-  async canGuess(): Promise<boolean> {
-    const guess = await this.guessGetter();
-
-    if (!guess) return true;
-
-    const current = this.now();
-    if (current - guess.timestamp < 60_000) return false;
-
-    const price = await this.priceGetter();
-    if (price === guess.price) return false; // TODO trigger a price update
-
-    return true;
-  }
-}
-
-test("player can see their current score", async () => {
-  const now = jest.fn(() => 0);
-  const priceGetter = jest.fn().mockResolvedValue(1000);
-  const guessGetter = jest.fn().mockResolvedValue(null);
-  const guessPutter = jest.fn(async (guess) => {
-    guessGetter.mockResolvedValue(guess);
-  });
-  const scoreGetter = jest.fn().mockResolvedValue(0);
-  const scorePutter = jest.fn(async (score) => {
-    scoreGetter.mockResolvedValue(score);
+    scoreGetter.mockResolvedValue(0);
+    scorePutter.mockImplementation(async (score) => {
+      scoreGetter.mockResolvedValue(score);
+    });
   });
 
-  const game = new Game(
-    now,
-    priceGetter,
-    guessGetter,
-    guessPutter,
-    scoreGetter,
-    scorePutter
-  );
-
-  await expect(game.getScore()).resolves.toEqual(0);
-});
-
-test("player can see the latest available BTC price in USD", async () => {
-  const now = jest.fn(() => 0);
-  const priceGetter = jest.fn().mockResolvedValue(1000);
-  const guessGetter = jest.fn().mockResolvedValue(null);
-  const guessPutter = jest.fn(async (guess) => {
-    guessGetter.mockResolvedValue(guess);
-  });
-  const scoreGetter = jest.fn().mockResolvedValue(0);
-  const scorePutter = jest.fn(async (score) => {
-    scoreGetter.mockResolvedValue(score);
+  test("player can see their current score", async () => {
+    await expect(game.getScore()).resolves.toEqual(0);
   });
 
-  const game = new Game(
-    now,
-    priceGetter,
-    guessGetter,
-    guessPutter,
-    scoreGetter,
-    scorePutter
-  );
-
-  await expect(game.getPrice()).resolves.toEqual(1000);
-});
-
-test("The guess is resolved when the price changes and at least 60 seconds have passed since the guess was made", async () => {
-  const now = jest.fn(() => 0);
-  const priceGetter = jest.fn().mockResolvedValue(1000);
-  const guessGetter = jest.fn().mockResolvedValue(null);
-  const guessPutter = jest.fn(async (guess) => {
-    guessGetter.mockResolvedValue(guess);
-  });
-  const scoreGetter = jest.fn().mockResolvedValue(0);
-  const scorePutter = jest.fn(async (score) => {
-    scoreGetter.mockResolvedValue(score);
+  test("player can see the latest available BTC price in USD", async () => {
+    await expect(game.getPrice()).resolves.toEqual(1000);
   });
 
-  const game = new Game(
-    now,
-    priceGetter,
-    guessGetter,
-    guessPutter,
-    scoreGetter,
-    scorePutter
-  );
-  await expect(game.canGuess()).resolves.toBeTruthy();
-  await game.makeGuess("up");
-  await expect(game.canGuess()).resolves.toBeFalsy();
+  test("The guess is resolved when the price changes and at least 60 seconds have passed since the guess was made", async () => {
+    await expect(game.canGuess()).resolves.toBeTruthy();
+    await game.makeGuess("up");
+    await expect(game.canGuess()).resolves.toBeFalsy();
 
-  now.mockImplementation(() => 60_000);
-  priceGetter.mockResolvedValue(1001);
+    now.mockImplementation(() => 60_000);
+    priceGetter.mockResolvedValue(1001);
 
-  await expect(game.canGuess()).resolves.toBeTruthy();
+    await expect(game.canGuess()).resolves.toBeTruthy();
+  });
 });
