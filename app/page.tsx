@@ -1,11 +1,9 @@
-import { fetchBitcoinPrice } from "./coincap";
-import { getCurrentScore } from "./ddb";
+import { getState } from "./state";
 
 export const revalidate = 3600 // revalidate the data at most every hour
 
 export default async function Home() {
-  const currentScore = await getCurrentScore()
-  const btc = await fetchBitcoinPrice();
+  const state = await getState();
   return (
     <>
     <header>
@@ -13,10 +11,10 @@ export default async function Home() {
       </header>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div role="status" aria-label="Score">
-          Current Score: {currentScore}
+          Current Score: {state.score.current}
         </div>
         <div role="status" aria-label="Price">
-            BTC Price: ${btc.data.rateUsd}
+            BTC Price: ${state.btc.rateUsd}
         </div>
         <button aria-label="up">Up</button>
         <button aria-label="down">Down</button>
