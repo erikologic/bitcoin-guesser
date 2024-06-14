@@ -1,9 +1,10 @@
-import { getState } from "./state";
-
-export const revalidate = 3600 // revalidate the data at most every hour
+import { getScore, getBtc, voteUp, getState } from './actions';
 
 export default async function Home() {
+  const score = await getScore();
+  const btc = await getBtc();
   const state = await getState();
+  console.log(state)
   return (
     <>
     <header>
@@ -11,13 +12,21 @@ export default async function Home() {
       </header>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div role="status" aria-label="Score">
-          Current Score: {state.score.current}
+          Current Score: {score}
         </div>
         <div role="status" aria-label="Price">
-            BTC Price: ${state.btc.rateUsd}
+            BTC Price: ${btc}
         </div>
-        <button aria-label="up">Up</button>
+        {state === 'guessing' ? <div>Waiting for the guess to be resolved</div> : 
+        <>
+        <button aria-label="up" onClick={async () => {
+          await voteUp();
+
+          }}>Up</button>
         <button aria-label="down">Down</button>
+        </>
+        }
+        
       </main>
     </>
     
