@@ -1,10 +1,11 @@
-import { getScore, getBtc, voteUp, getState } from './actions';
+import { fetchBitcoinPrice } from "./coincap";
+import { getCurrentScore } from "./ddb";
+
+export const revalidate = 3600 // revalidate the data at most every hour
 
 export default async function Home() {
-  const score = await getScore();
-  const btc = await getBtc();
-  const state = await getState();
-  console.log(state)
+  const currentScore = await getCurrentScore()
+  const btc = await fetchBitcoinPrice();
   return (
     <>
     <header>
@@ -12,21 +13,13 @@ export default async function Home() {
       </header>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div role="status" aria-label="Score">
-          Current Score: {score}
+          Current Score: {currentScore}
         </div>
         <div role="status" aria-label="Price">
-            BTC Price: ${btc}
+            BTC Price: ${btc.data.rateUsd}
         </div>
-        {state === 'guessing' ? <div>Waiting for the guess to be resolved</div> : 
-        <>
-        <button aria-label="up" onClick={async () => {
-          await voteUp();
-
-          }}>Up</button>
+        <button aria-label="up">Up</button>
         <button aria-label="down">Down</button>
-        </>
-        }
-        
       </main>
     </>
     
