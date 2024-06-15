@@ -2,8 +2,6 @@ import { Button } from "./components/Button";
 import { getState } from "./lib/game";
 import { Refresher } from "./components/Refresher";
 
-export const revalidate = 3600 // revalidate the data at most every hour
-
 export default async function Home() {
   const {score, guess, btcPrice, timestamp} = await getState()
   return (
