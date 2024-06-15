@@ -22,9 +22,18 @@ const options: RequestInit = {
 if (!process.env.COINCAP_API_KEY) {
   throw new Error("COINCAP_API_KEY is not defined");
 }
-export const fetchBitcoinPrice = cache(
-  async (): Promise<CoincapResponse> =>
-    fetch("https://api.coincap.io/v2/rates/bitcoin", options).then((r) =>
-      r.json()
-    )
-);
+
+export const fetchBitcoinPrice = async () => ({
+  data: {
+    id: "bitcoin",
+    symbol: "BTC",
+    currencySymbol: "$",
+    type: "crypto",
+    rateUsd: "100000",
+  },
+  timestamp: Date.now(),
+});
+  // async (): Promise<CoincapResponse> =>
+  //   fetch("https://api.coincap.io/v2/rates/bitcoin", options).then((r) =>
+  //     r.json()
+  //   )

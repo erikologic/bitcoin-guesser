@@ -4,7 +4,9 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
 
-const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const db = DynamoDBDocumentClient.from(
+  new DynamoDBClient({ endpoint: "http://localhost:8000" })
+);
 
 export const getDDB = cache(async () => {
   const command = new QueryCommand({

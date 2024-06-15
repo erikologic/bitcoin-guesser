@@ -18,7 +18,9 @@
 	"features": {
 		// Sonarlint
 		"ghcr.io/devcontainers/features/java:1": {},
-        "ghcr.io/devcontainers/features/aws-cli:1": {}
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.

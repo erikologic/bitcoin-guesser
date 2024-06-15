@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "sst bind --stage node next dev",
+    "dev:datastore": "sst bind --stage node next dev",
     "dev:sst": "sst dev",
     "deploy:prod": "sst deploy --stage prod",
     "build": "sst bind --stage prod next build",

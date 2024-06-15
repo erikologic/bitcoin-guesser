@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("the app", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?testing=true");
   await expect(page).toHaveTitle(/Bitcoin Guesser/);
 
   // The player can at all times see their current score
