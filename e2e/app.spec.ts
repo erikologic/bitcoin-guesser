@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const postBitcoin = (payload: any) =>
+const setBitcoin = (payload: any) =>
   fetch("http://localhost:9000/bitcoin", {
     method: "POST",
     headers: {
@@ -22,12 +22,13 @@ test("the app", async ({ page }) => {
   ).toBeVisible();
 
   // AND they can see the current BTC price
+  await setBitcoin({ data: { rateUsd: "100000" } });
   await expect(
     page.getByRole("status", { name: "Price" }).getByText("100000")
   ).toBeVisible();
 
   // GIVEN the price updates
-  await postBitcoin({ data: { rateUsd: "99" } });
+  await setBitcoin({ data: { rateUsd: "99" } });
 
   // THEN they can see the current BTC price
   await expect(

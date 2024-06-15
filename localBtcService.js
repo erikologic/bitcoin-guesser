@@ -9,7 +9,7 @@ let store = {
     symbol: "BTC",
     currencySymbol: "$",
     type: "crypto",
-    rateUsd: "100000",
+    rateUsd: Math.floor(Math.random() * 100000),
   },
   timestamp: Date.now(),
 }

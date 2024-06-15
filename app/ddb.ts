@@ -1,18 +1,31 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ListTablesCommand } from "@aws-sdk/client-dynamodb";
 import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
 
 const isLocal = process.env.LOCAL === "true";
 
 const db = DynamoDBDocumentClient.from(
-  new DynamoDBClient({
-    endpoint: isLocal ? "http://localhost:8000" : undefined,
-  })
+  new DynamoDBClient(
+    isLocal
+      ? {
+          endpoint: "http://localhost:8000",
+          credentials: {
+            secretAccessKey: "DUMMY",
+            accessKeyId: "DUMMY",
+          },
+          region: "eu-west-1",
+        }
+      : {}
+  )
 );
+
+const TableName = isLocal
+  ? "local-bitcoin-guesser-scoreboard"
+  : "prod-bitcoin-guesser-scoreboard";
 
 export const getDDB = async () => {
   const command = new QueryCommand({
-    TableName: "prod-bitcoin-guesser-scoreboard",
+    TableName,
     KeyConditionExpression: "pk = :pk",
     ExpressionAttributeValues: {
       ":pk": "test",
@@ -28,7 +41,7 @@ export const getCurrentScore = async () => {
   if (!id) return 0;
 
   const command = new QueryCommand({
-    TableName: "prod-bitcoin-guesser-scoreboard",
+    TableName,
     KeyConditionExpression: "pk = :pk AND sk = :sk",
     ExpressionAttributeValues: {
       ":pk": "currentScore",

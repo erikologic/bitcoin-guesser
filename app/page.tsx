@@ -1,5 +1,6 @@
 import { fetchBitcoinPrice } from "./coincap";
 import { getCurrentScore } from "./ddb";
+import { Price } from "./Price";
 
 export const revalidate = 3600 // revalidate the data at most every hour
 
@@ -15,9 +16,7 @@ export default async function Home() {
         <div role="status" aria-label="Score">
           Current Score: {currentScore}
         </div>
-        <div role="status" aria-label="Price">
-            BTC Price: ${btc.data.rateUsd}
-        </div>
+        <Price price={btc.data.rateUsd} />  
         <button aria-label="up">Up</button>
         <button aria-label="down">Down</button>
       </main>
