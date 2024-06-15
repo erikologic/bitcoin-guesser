@@ -5,6 +5,7 @@ const options: RequestInit = {
     "Accept-Encoding": "gzip",
     Authorization: `Bearer ${process.env.COINCAP_API_KEY}`,
   },
+  cache: "no-store",
 };
 
 const endpoint =

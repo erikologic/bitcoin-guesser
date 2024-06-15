@@ -1,6 +1,4 @@
-import { cookies } from "next/headers";
 import { Button } from "./components/Button";
-import { fetchBitcoinPrice } from "./lib/btcService";
 import { getState } from "./lib/game";
 import { Refresher } from "./components/Refresher";
 
