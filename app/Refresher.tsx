@@ -3,23 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from 'react';
 
-interface Props {
-  price: string;
-}
-
-export const Price = ({price}: Props) => {
+export const Refresher = () => {
     const router = useRouter();
 
     useEffect(() => {
         const timer = setTimeout(() => {
           router.refresh();
-        }, 5000);
+        }, 1 * 1000); // TODO 3 secs
         return () => clearTimeout(timer);
       }, );
 
-    return (
-        <div role="status" aria-label="Price">
-            BTC Price: ${price}
-        </div>
-    )
+    return <></>
 }
