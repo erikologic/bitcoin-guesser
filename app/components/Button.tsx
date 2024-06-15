@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { vote } from "./action";
+import { vote } from "../lib/action";
 
 interface Props {
     direction: 'Up' | 'Down';

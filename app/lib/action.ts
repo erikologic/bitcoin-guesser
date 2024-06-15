@@ -1,6 +1,6 @@
 "use server";
 
-import { fetchBitcoinPrice } from "./coincap";
+import { fetchBitcoinPrice } from "./btcService";
 import { putGuess } from "./game";
 
 export const vote = async (direction: "Up" | "Down") => {

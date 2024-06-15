@@ -7,7 +7,7 @@ import {
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
-import { fetchBitcoinPrice } from "./coincap";
+import { fetchBitcoinPrice } from "./btcService";
 
 const isLocal = process.env.LOCAL === "true";
 
