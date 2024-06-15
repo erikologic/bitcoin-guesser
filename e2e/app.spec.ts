@@ -1,20 +1,38 @@
 import { test, expect } from "@playwright/test";
 
+const postBitcoin = (payload: any) =>
+  fetch("http://localhost:9000/bitcoin", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
 test("the app", async ({ page }) => {
-  await page.goto("/?testing=true");
+  // WHEN a new player visits the site
+  await page.goto("/");
+
+  // THEN they can see the website
   await expect(page).toHaveTitle(/Bitcoin Guesser/);
 
-  // The player can at all times see their current score
-  // New players start with a score of 0
+  // AND their score will be 0
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("0")
   ).toBeVisible();
 
-  // The player can at all times see the latest available BTC price in USD
-  const currentPrice = await page
-    .getByRole("status", { name: "Price" })
-    .textContent();
-  expect(currentPrice).toMatch(/\$[0-9.]+/);
+  // AND they can see the current BTC price
+  await expect(
+    page.getByRole("status", { name: "Price" }).getByText("100000")
+  ).toBeVisible();
+
+  // GIVEN the price updates
+  await postBitcoin({ data: { rateUsd: "99" } });
+
+  // THEN they can see the current BTC price
+  await expect(
+    page.getByRole("status", { name: "Price" }).getByText("99")
+  ).toBeVisible();
 
   // The player can choose to enter a guess of either “up” or “down“
   await expect(page.getByRole("button", { name: "up" })).toBeEnabled();
