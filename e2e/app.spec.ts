@@ -9,7 +9,7 @@ const setBitcoin = (payload: any) =>
     body: JSON.stringify(payload),
   });
 
-test("the app", async ({ page }) => {
+test("the app", async ({ page, browser }) => {
   // WHEN a new player visits the site
   await page.goto("/");
 
@@ -74,6 +74,24 @@ test("the app", async ({ page }) => {
   await page.reload();
 
   // THEN the score will be 1
+  await expect(
+    page.getByRole("status", { name: "Score" }).getByText("1")
+  ).toBeVisible();
+
+  // GIVEN a new player open the website
+  const context = await browser.newContext();
+  const player2page = await context.newPage();
+  await player2page.goto("/");
+
+  // THEN they can see the website
+  await expect(player2page).toHaveTitle(/Bitcoin Guesser/);
+
+  // AND their score will be 0
+  await expect(
+    player2page.getByRole("status", { name: "Score" }).getByText("0")
+  ).toBeVisible();
+
+  // AND player 1 score is still 1
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("1")
   ).toBeVisible();
