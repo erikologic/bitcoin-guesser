@@ -4,6 +4,9 @@
 	"name": "Node.js & TypeScript",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	"mounts": [
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+	],
 	"portsAttributes": {
 		"3000": {
 			"label": "app",
@@ -22,8 +25,8 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"updateContentCommand": "pnpm install && pnpm exec playwright install-deps ",
-	"postAttachCommand": "pnpm run dev", // requires credentials to be available at boot time!
+	"updateContentCommand": "npm install && npx playwright install --with-deps",
+	// "postAttachCommand": "pnpm run dev", // requires credentials to be available at boot time!
 	
 
 	// Configure tool-specific properties.
@@ -45,11 +48,9 @@
 				"redhat.vscode-yaml",
 				"rockingskier.copy-copy-paste",
 				"SimonSiefke.svg-preview",
-				// "svelte.svelte-vscode",
 				"VisualStudioExptTeam.intellicode-api-usage-examples",
 				"wix.vscode-import-cost",
 				"YoavBls.pretty-ts-errors",
-				// "vitest.explorer",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"eamodio.gitlens",
 				"toba.vsfire",
@@ -58,7 +59,6 @@
 				"rvest.vs-code-prettier-eslint",
 				"esbenp.prettier-vscode",
 				"timonwong.shellcheck",
-				// "fivethree.vscode-svelte-snippets"
 			]
 		}
 	}
