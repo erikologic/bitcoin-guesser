@@ -7,6 +7,7 @@ import {
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
+import { fetchBitcoinPrice } from "./coincap";
 
 const isLocal = process.env.LOCAL === "true";
 
@@ -50,11 +51,24 @@ interface Guess {
 interface State {
   score: number;
   guess?: Guess;
+  btcPrice: string;
+  timestamp: number;
 }
+
 export const getState = async (): Promise<State> => {
+  const {
+    timestamp,
+    data: { rateUsd: btcPrice },
+  } = await fetchBitcoinPrice();
+
   const id = cookies().get("id")?.value;
-  console.log("cookies", cookies().get("id"));
-  if (!id) return { score: 0, guess: undefined };
+  if (!id)
+    return {
+      score: 0,
+      guess: undefined,
+      btcPrice,
+      timestamp,
+    };
 
   const command = new QueryCommand({
     TableName,
@@ -69,7 +83,21 @@ export const getState = async (): Promise<State> => {
   const guess: Guess | undefined = results.Items?.filter(
     (item) => item.sk === "guess"
   )[0]?.data;
-  return { score, guess };
+  const state = { score, guess, btcPrice, timestamp };
+
+  if (guess && timestamp > guess.timestamp + 60_000) {
+    const command = new PutCommand({
+      TableName,
+      Item: {
+        pk: `user#${id}`,
+        sk: "guess",
+        data: undefined,
+      },
+    });
+    await db.send(command);
+    delete state.guess;
+  }
+  return state;
 };
 
 export const putGuess = async (

@@ -7,8 +7,7 @@ import { Refresher } from "./Refresher";
 export const revalidate = 3600 // revalidate the data at most every hour
 
 export default async function Home() {
-  const {score, guess} = await getState()
-  const btc = await fetchBitcoinPrice();
+  const {score, guess, btcPrice, timestamp} = await getState()
   return (
     <>
       <Refresher />
@@ -21,10 +20,16 @@ export default async function Home() {
           Current Score: {score}
         </div>
         <div role="status" aria-label="Price">
-            BTC Price: ${btc.data.rateUsd} <br />
-            BTC time: {new Date(btc.timestamp).toLocaleString()}
+            BTC Price: ${btcPrice} <br />
+            BTC time: {new Date(timestamp).toLocaleString()}
         </div>
-        {guess ? <></> : <>
+        {guess ? <>
+          <section role="status" aria-label="Guess">
+            Your guess: {guess.direction} <br />
+            Rate: {guess.rate} <br />
+            Will resolve at: {new Date(guess.timestamp).toLocaleString()} <br />
+          </section>
+        </> : <>
           <Button direction="Up" />
           <Button direction="Down" />
         </>}

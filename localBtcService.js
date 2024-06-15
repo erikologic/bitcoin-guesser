@@ -11,14 +11,18 @@ let store = {
     type: "crypto",
     rateUsd: 100000,
   },
-  timestamp: Date.now(),
+  // timestamp: falsy will be filled with Date.now()
 }
 
 app.use(express.json());
 
 app.get('/bitcoin', (req, res) => {
-  const withCurrentTimestamp = {timestamp: Date.now()}
-  res.send(_.merge(store, withCurrentTimestamp));
+  if (!store.timestamp) {
+    const withCurrentTimestamp = { timestamp: Date.now() }
+    res.send({ ...store, ...withCurrentTimestamp });
+  } else {
+    res.send(store);
+  }
 });
 
 app.post('/bitcoin', (req, res) => {
