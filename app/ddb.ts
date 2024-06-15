@@ -1,16 +1,18 @@
-import { cache } from "react";
-import { Table } from "sst/node/table";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
 
+const isLocal = process.env.LOCAL === "true";
+
 const db = DynamoDBDocumentClient.from(
-  new DynamoDBClient({ endpoint: "http://localhost:8000" })
+  new DynamoDBClient({
+    endpoint: isLocal ? "http://localhost:8000" : undefined,
+  })
 );
 
-export const getDDB = cache(async () => {
+export const getDDB = async () => {
   const command = new QueryCommand({
-    TableName: Table.scoreboard.tableName,
+    TableName: "prod-bitcoin-guesser-scoreboard",
     KeyConditionExpression: "pk = :pk",
     ExpressionAttributeValues: {
       ":pk": "test",
@@ -19,14 +21,14 @@ export const getDDB = cache(async () => {
 
   const results = await db.send(command);
   return results.Items?.[0].sk || "couldn't get from DDB";
-});
+};
 
-export const getCurrentScore = cache(async () => {
+export const getCurrentScore = async () => {
   const id = cookies().get("id")?.value;
   if (!id) return 0;
 
   const command = new QueryCommand({
-    TableName: Table.scoreboard.tableName,
+    TableName: "prod-bitcoin-guesser-scoreboard",
     KeyConditionExpression: "pk = :pk AND sk = :sk",
     ExpressionAttributeValues: {
       ":pk": "currentScore",
@@ -36,4 +38,4 @@ export const getCurrentScore = cache(async () => {
 
   const results = await db.send(command);
   return results.Items?.[0]?.sk ?? 0;
-});
+};

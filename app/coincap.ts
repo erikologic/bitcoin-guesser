@@ -1,4 +1,16 @@
-import { cache } from "react";
+const options: RequestInit = {
+  method: "GET",
+  redirect: "follow",
+  headers: {
+    "Accept-Encoding": "gzip",
+    Authorization: `Bearer ${process.env.COINCAP_API_KEY}`,
+  },
+};
+
+const endpoint =
+  process.env.LOCAL === "true"
+    ? "http://localhost:9000/bitcoin"
+    : "https://api.coincap.io/v2/rates/bitcoin";
 
 interface CoincapResponse {
   data: {
@@ -10,30 +22,6 @@ interface CoincapResponse {
   };
   timestamp: number;
 }
-const options: RequestInit = {
-  method: "GET",
-  redirect: "follow",
-  headers: {
-    "Accept-Encoding": "gzip",
-    Authorization: `Bearer ${process.env.COINCAP_API_KEY}`,
-  },
-};
 
-if (!process.env.COINCAP_API_KEY) {
-  throw new Error("COINCAP_API_KEY is not defined");
-}
-
-export const fetchBitcoinPrice = async () => ({
-  data: {
-    id: "bitcoin",
-    symbol: "BTC",
-    currencySymbol: "$",
-    type: "crypto",
-    rateUsd: "100000",
-  },
-  timestamp: Date.now(),
-});
-  // async (): Promise<CoincapResponse> =>
-  //   fetch("https://api.coincap.io/v2/rates/bitcoin", options).then((r) =>
-  //     r.json()
-  //   )
+export const fetchBitcoinPrice = async (): Promise<CoincapResponse> =>
+  fetch(endpoint, options).then((r) => r.json());
