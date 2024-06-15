@@ -4,6 +4,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   QueryCommand,
   PutCommand,
+  BatchWriteCommand,
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { cookies } from "next/headers";
@@ -102,33 +103,40 @@ export const getState = async (): Promise<State> => {
     timestamp > guess.timestamp + 60_000 &&
     guess.rate !== btcPrice
   ) {
-    const command = new PutCommand({
-      TableName,
-      Item: {
-        pk: `user#${id}`,
-        sk: "guess",
-        data: undefined,
-      },
-    });
-    await db.send(command);
-    delete state.guess;
-
     const point = calcPoint(
       guess.direction,
       parseInt(guess.rate),
       parseInt(state.btcPrice)
     );
     const newScore = state.score + point;
-    const scoreCommand = new PutCommand({
-      TableName,
-      Item: {
-        pk: `user#${id}`,
-        sk: "score",
-        score: newScore,
+    state.score = newScore;
+    delete state.guess;
+
+    const command = new BatchWriteCommand({
+      RequestItems: {
+        [TableName]: [
+          {
+            PutRequest: {
+              Item: {
+                pk: `user#${id}`,
+                sk: "guess",
+                data: undefined,
+              },
+            },
+          },
+          {
+            PutRequest: {
+              Item: {
+                pk: `user#${id}`,
+                sk: "score",
+                score: newScore,
+              },
+            },
+          },
+        ],
       },
     });
-    await db.send(scoreCommand);
-    state.score = newScore;
+    await db.send(command);
   }
   return state;
 };
