@@ -27,6 +27,10 @@ test("the app", async ({ page }) => {
     page.getByRole("status", { name: "Price" }).getByText("100000")
   ).toBeVisible();
 
+  // AND the player can make a guess if the price will go up or down
+  await expect(page.getByRole("button", { name: "up" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "down" })).toBeEnabled();
+
   // GIVEN the price updates
   await setBitcoin({ data: { rateUsd: "99" } });
 
@@ -35,11 +39,14 @@ test("the app", async ({ page }) => {
     page.getByRole("status", { name: "Price" }).getByText("99")
   ).toBeVisible();
 
-  // The player can choose to enter a guess of either “up” or “down“
-  await expect(page.getByRole("button", { name: "up" })).toBeEnabled();
-  await expect(page.getByRole("button", { name: "down" })).toBeEnabled();
+  // GIVEN the player makes a guess
+  await page.getByRole("button", { name: "up" }).click();
 
-  // Players can only make one guess at a time
+  // THEN the player cannot make a new guess
+  await expect(page.getByRole("button", { name: "up" })).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "down" })).not.toBeVisible();
+
+
   // After a guess is entered the player cannot make new guesses until the existing guess is resolved
   // The guess is resolved when the price changes and at least 60 seconds have passed since the guess was made
   // If the guess is correct (up = price went higher, down = price went lower), the user gets 1 point added to their score. If the guess is incorrect, the user loses 1 point.

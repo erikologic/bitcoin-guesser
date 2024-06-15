@@ -17,7 +17,8 @@ let store = {
 app.use(express.json());
 
 app.get('/bitcoin', (req, res) => {
-  res.send(store);
+  const withCurrentTimestamp = {timestamp: Date.now()}
+  res.send(_.merge(store, withCurrentTimestamp));
 });
 
 app.post('/bitcoin', (req, res) => {
