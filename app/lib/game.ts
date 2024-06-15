@@ -97,7 +97,11 @@ export const getState = async (): Promise<State> => {
   )[0]?.data;
   const state = { score, guess, btcPrice, timestamp };
 
-  if (guess && timestamp > guess.timestamp + 60_000) {
+  if (
+    guess &&
+    timestamp > guess.timestamp + 60_000 &&
+    guess.rate !== btcPrice
+  ) {
     const command = new PutCommand({
       TableName,
       Item: {

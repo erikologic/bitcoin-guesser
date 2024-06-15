@@ -28,8 +28,8 @@ test("the app", async ({ page }) => {
   ).toBeVisible();
 
   // AND the player can make a guess if the price will go up or down
-  await expect(page.getByRole("button", { name: "up" })).toBeEnabled();
-  await expect(page.getByRole("button", { name: "down" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Up" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Down" })).toBeEnabled();
 
   // GIVEN the price updates
   await setBitcoin({ data: { rateUsd: "99" } });
@@ -40,30 +40,41 @@ test("the app", async ({ page }) => {
   ).toBeVisible();
 
   // GIVEN the player makes a guess
-  await page.getByRole("button", { name: "up" }).click();
+  await page.getByRole("button", { name: "Up" }).click();
 
   // THEN the player cannot make a new guess
-  await expect(page.getByRole("button", { name: "up" })).not.toBeVisible();
-  await expect(page.getByRole("button", { name: "down" })).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Up" })).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Down" })).not.toBeVisible();
 
   // AND they will be told the guess that they made
-  await expect(page.getByRole("status", { name: "Guess" }).getByText("up")).toBeVisible();
+  await expect(page.getByRole("status", { name: "Guess" }).getByText("Up")).toBeVisible();
 
-  // TODO separate the timestamp from the rate
-  // WHEN 60 seconds have passed since the guess was made
-  // AND the price went up
+  // WHEN 60 seconds have passed since the guess was made but the price hasn't changed
   await setBitcoin({
-    data: { rateUsd: "1000" },
     timestamp: Date.now() + 61_000,
   });
 
+  // THEN the player cannot make a new guess
+  await expect(page.getByRole("button", { name: "Up" })).not.toBeVisible();
+
+  // WHEN the price finally changes
+  await setBitcoin({
+    data: { rateUsd: "1000" },
+  });
+
   // THEN the player can make a new guess
-  await expect(page.getByRole("button", { name: "up" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Up" })).toBeVisible();
 
   // AND their score will be 1
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("1")
   ).toBeVisible();
 
-  // If the guess is correct (up = price went higher, down = price went lower), the user gets 1 point added to their score. If the guess is incorrect, the user loses 1 point.
+  // WHEN the user refreshes the page
+  await page.reload();
+
+  // THEN the score will be 1
+  await expect(
+    page.getByRole("status", { name: "Score" }).getByText("1")
+  ).toBeVisible();
 });
