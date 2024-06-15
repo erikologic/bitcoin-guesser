@@ -92,8 +92,8 @@ export const getState = async (): Promise<State> => {
   ) {
     const point = calcPoint(
       guess.direction,
-      parseInt(guess.rate),
-      parseInt(state.btcPrice)
+      parseFloat(guess.rate),
+      parseFloat(state.btcPrice)
     );
     const newScore = state.score + point;
     state.score = newScore;
