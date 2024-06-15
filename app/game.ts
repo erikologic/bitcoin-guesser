@@ -55,6 +55,18 @@ interface State {
   timestamp: number;
 }
 
+const calcPoint = (
+  direction: "Up" | "Down",
+  rateAtGuessTime: number,
+  currentRate: number
+) => {
+  const isGoodGuess =
+    direction === "Up"
+      ? currentRate > rateAtGuessTime
+      : currentRate < rateAtGuessTime;
+  return isGoodGuess ? 1 : -1;
+};
+
 export const getState = async (): Promise<State> => {
   const {
     timestamp,
@@ -96,6 +108,23 @@ export const getState = async (): Promise<State> => {
     });
     await db.send(command);
     delete state.guess;
+
+    const point = calcPoint(
+      guess.direction,
+      parseInt(guess.rate),
+      parseInt(state.btcPrice)
+    );
+    const newScore = state.score + point;
+    const scoreCommand = new PutCommand({
+      TableName,
+      Item: {
+        pk: `user#${id}`,
+        sk: "score",
+        score: newScore,
+      },
+    });
+    await db.send(scoreCommand);
+    state.score = newScore;
   }
   return state;
 };

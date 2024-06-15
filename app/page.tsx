@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { Button } from "./Button";
 import { fetchBitcoinPrice } from "./coincap";
-import { getState } from "./ddb";
+import { getState } from "./game";
 import { Refresher } from "./Refresher";
 
 export const revalidate = 3600 // revalidate the data at most every hour

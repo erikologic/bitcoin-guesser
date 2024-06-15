@@ -49,6 +49,7 @@ test("the app", async ({ page }) => {
   // AND they will be told the guess that they made
   await expect(page.getByRole("status", { name: "Guess" }).getByText("up")).toBeVisible();
 
+  // TODO separate the timestamp from the rate
   // WHEN 60 seconds have passed since the guess was made
   // AND the price went up
   await setBitcoin({
