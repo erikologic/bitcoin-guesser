@@ -31,19 +31,6 @@ const TableName = isLocal
   ? "local-bitcoin-guesser-scoreboard"
   : "prod-bitcoin-guesser-scoreboard";
 
-export const getDDB = async () => {
-  const command = new QueryCommand({
-    TableName,
-    KeyConditionExpression: "pk = :pk",
-    ExpressionAttributeValues: {
-      ":pk": "test",
-    },
-  });
-
-  const results = await db.send(command);
-  return results.Items?.[0].sk || "couldn't get from DDB";
-};
-
 interface Guess {
   direction: "Up" | "Down";
   rate: string;
