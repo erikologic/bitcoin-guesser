@@ -63,13 +63,16 @@ test("the app", async ({ page, browser }) => {
     data: { rateUsd: "1000" },
   });
 
-  // THEN the player can make a new guess
-  await expect(page.getByRole("button", { name: "Up" })).toBeVisible();
+  // THEN the player will be told they were correct
+  await expect(page.getByRole("status", { name: "Guess" }).getByText("Good Job!")).toBeVisible();
 
   // AND their score will be 1
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("1")
-  ).toBeVisible();
+  ).toBeVisible();  
+
+  // AND the player can make a new guess
+  await expect(page.getByRole("button", { name: "Up" })).toBeVisible();
 
   // WHEN the user refreshes the page
   await page.reload();

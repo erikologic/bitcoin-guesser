@@ -43,9 +43,9 @@ export const getUserState = async (id: string): Promise<UserState> => {
   const results = await db.send(command);
   const score: number =
     results.Items?.find((item) => item.sk === "score")?.score || 0;
-  const guess: Guess | undefined = results.Items?.filter(
+  const guess: Guess = results.Items?.filter(
     (item) => item.sk === "guess"
-  )[0]?.data;
+  )[0]?.data ?? { type: "new-game" };
   return { score, guess };
 };
 
@@ -92,6 +92,7 @@ export const putGuess = async (
     direction,
     rate,
     timestamp,
+    type: "unresolved",
   };
 
   const command = new PutCommand({

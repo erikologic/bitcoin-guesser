@@ -3,12 +3,12 @@
 import { fetchBitcoinRate } from "./btcService";
 import { getUserState, putGuess, putUserState } from "./dynamoDb";
 import { cookies } from "next/headers";
-import { BitcoinRate, Guess, UserState } from "./types";
+import { BitcoinRate, GuessDirection, UserState } from "./types";
 
 const RESOLVE_WAIT_TIME = 60_000;
 
 const calcPoint = (
-  direction: Guess["direction"],
+  direction: GuessDirection,
   rateAtGuessTime: number,
   currentRate: number
 ) => {
@@ -19,14 +19,16 @@ const calcPoint = (
   return isGoodGuess ? 1 : -1;
 };
 
-export const guess = async (direction: Guess["direction"]) => {
+export const guess = async (direction: GuessDirection) => {
   const btcRate = await fetchBitcoinRate();
   await putGuess(direction, btcRate.rate, btcRate.timestamp);
 };
 
 const initialUserState: UserState = {
   score: 0,
-  guess: undefined,
+  guess: {
+    type: "new-game",
+  },
 };
 
 interface GetState {
@@ -47,7 +49,7 @@ export const getState = async (): Promise<GetState> => {
   let userState = await getUserState(id);
 
   if (
-    userState.guess &&
+    userState.guess?.type === "unresolved" &&
     btcRate.timestamp > userState.guess.timestamp + RESOLVE_WAIT_TIME &&
     btcRate.rate !== userState.guess.rate
   ) {
@@ -58,7 +60,11 @@ export const getState = async (): Promise<GetState> => {
     );
     userState = {
       score: userState.score + point,
-      guess: undefined,
+      guess: {
+        ...userState.guess,
+        type: "resolved",
+        wasCorrect: point > 0,
+      },
     };
 
     await putUserState(id, userState);
