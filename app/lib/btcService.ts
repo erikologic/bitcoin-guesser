@@ -1,3 +1,5 @@
+import { BitcoinRate } from "./types";
+
 const options: RequestInit = {
   method: "GET",
   redirect: "follow",
@@ -24,5 +26,10 @@ interface CoincapResponse {
   timestamp: number;
 }
 
-export const fetchBitcoinPrice = async (): Promise<CoincapResponse> =>
-  fetch(endpoint, options).then((r) => r.json());
+export const fetchBitcoinRate = async (): Promise<BitcoinRate> =>
+  fetch(endpoint, options)
+    .then((r) => r.json())
+    .then((r: CoincapResponse) => ({
+      timestamp: r.timestamp,
+      rate: r.data.rateUsd,
+    }));

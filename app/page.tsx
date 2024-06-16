@@ -1,9 +1,9 @@
 import { Button } from "./components/Button";
-import { getState } from "./lib/game";
 import { Refresher } from "./components/Refresher";
+import { getState } from "./lib/game";
 
 export default async function Home() {
-  const {score, guess, btcPrice, timestamp} = await getState()
+  const {userState, btcRate} = await getState()
   return (
     <>
       <Refresher />
@@ -13,17 +13,17 @@ export default async function Home() {
 
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div role="status" aria-label="Score">
-          Current Score: {score}
+          Current Score: {userState.score}
         </div>
         <div role="status" aria-label="Price">
-            BTC Price: ${btcPrice} <br />
-            BTC time: {new Date(timestamp).toLocaleString()}
+            BTC Price: ${btcRate.rate} <br />
+            BTC time: {new Date(btcRate.timestamp).toLocaleString()}
         </div>
-        {guess ? <>
+        {userState.guess ? <>
           <section role="status" aria-label="Guess">
-            Your guess: {guess.direction} <br />
-            Rate: {guess.rate} <br />
-            Will resolve at: {new Date(guess.timestamp).toLocaleString()} <br />
+            Your guess: {userState.guess.direction} <br />
+            Rate: {userState.guess.rate} <br />
+            Will resolve at: {new Date(userState.guess.timestamp).toLocaleString()} <br />
           </section>
         </> : <>
           <Button direction="Up" />

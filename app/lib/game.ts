@@ -1,50 +1,14 @@
 "use server";
 
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  QueryCommand,
-  PutCommand,
-  BatchWriteCommand,
-  DynamoDBDocumentClient,
-} from "@aws-sdk/lib-dynamodb";
+import { fetchBitcoinRate } from "./btcService";
+import { getUserState, putGuess, putUserState } from "./dynamoDb";
 import { cookies } from "next/headers";
-import { fetchBitcoinPrice } from "./btcService";
+import { BitcoinRate, Guess, UserState } from "./types";
 
-const isLocal = process.env.LOCAL === "true";
-
-const db = DynamoDBDocumentClient.from(
-  new DynamoDBClient(
-    isLocal
-      ? {
-          endpoint: "http://localhost:8000",
-          credentials: {
-            secretAccessKey: "DUMMY",
-            accessKeyId: "DUMMY",
-          },
-          region: "eu-west-1",
-        }
-      : {}
-  )
-);
-
-const TableName = isLocal
-  ? "local-bitcoin-guesser-scoreboard"
-  : "prod-bitcoin-guesser-scoreboard";
-
-interface Guess {
-  direction: "Up" | "Down";
-  rate: string;
-  timestamp: number;
-}
-interface State {
-  score: number;
-  guess?: Guess;
-  btcPrice: string;
-  timestamp: number;
-}
+const RESOLVE_WAIT_TIME = 60_000;
 
 const calcPoint = (
-  direction: "Up" | "Down",
+  direction: Guess["direction"],
   rateAtGuessTime: number,
   currentRate: number
 ) => {
@@ -55,100 +19,49 @@ const calcPoint = (
   return isGoodGuess ? 1 : -1;
 };
 
-export const getState = async (): Promise<State> => {
-  const {
-    timestamp,
-    data: { rateUsd: btcPrice },
-  } = await fetchBitcoinPrice();
+export const guess = async (direction: Guess["direction"]) => {
+  const btcRate = await fetchBitcoinRate();
+  await putGuess(direction, btcRate.rate, btcRate.timestamp);
+};
+
+const initialUserState: UserState = {
+  score: 0,
+  guess: undefined,
+};
+
+interface GetState {
+  userState: UserState;
+  btcRate: BitcoinRate;
+}
+
+export const getState = async (): Promise<GetState> => {
+  const btcRate = await fetchBitcoinRate();
 
   const id = cookies().get("id")?.value;
   if (!id)
     return {
-      score: 0,
-      guess: undefined,
-      btcPrice,
-      timestamp,
+      userState: initialUserState,
+      btcRate,
     };
 
-  const command = new QueryCommand({
-    TableName,
-    KeyConditionExpression: "pk = :pk",
-    ExpressionAttributeValues: {
-      ":pk": `user#${id}`,
-    },
-  });
-
-  const results = await db.send(command);
-  const score = results.Items?.find((item) => item.sk === "score")?.score || 0;
-  const guess: Guess | undefined = results.Items?.filter(
-    (item) => item.sk === "guess"
-  )[0]?.data;
-  const state = { score, guess, btcPrice, timestamp };
+  let userState = await getUserState(id);
 
   if (
-    guess &&
-    timestamp > guess.timestamp + 60_000 &&
-    guess.rate !== btcPrice
+    userState.guess &&
+    btcRate.timestamp > userState.guess.timestamp + RESOLVE_WAIT_TIME &&
+    btcRate.rate !== userState.guess.rate
   ) {
     const point = calcPoint(
-      guess.direction,
-      parseFloat(guess.rate),
-      parseFloat(state.btcPrice)
+      userState.guess.direction,
+      parseFloat(userState.guess.rate),
+      parseFloat(btcRate.rate)
     );
-    const newScore = state.score + point;
-    state.score = newScore;
-    delete state.guess;
+    userState = {
+      score: userState.score + point,
+      guess: undefined,
+    };
 
-    const command = new BatchWriteCommand({
-      RequestItems: {
-        [TableName]: [
-          {
-            PutRequest: {
-              Item: {
-                pk: `user#${id}`,
-                sk: "guess",
-                data: undefined,
-              },
-            },
-          },
-          {
-            PutRequest: {
-              Item: {
-                pk: `user#${id}`,
-                sk: "score",
-                score: newScore,
-              },
-            },
-          },
-        ],
-      },
-    });
-    await db.send(command);
+    await putUserState(id, userState);
   }
-  return state;
-};
-
-export const putGuess = async (
-  direction: "Up" | "Down",
-  rate: string,
-  timestamp: number
-) => {
-  const id = cookies().get("id")?.value;
-  if (!id) throw new Error("This must not happen");
-
-  const data: Guess = {
-    direction,
-    rate,
-    timestamp,
-  };
-
-  const command = new PutCommand({
-    TableName,
-    Item: {
-      pk: `user#${id}`,
-      sk: "guess",
-      data,
-    },
-  });
-  await db.send(command);
+  return { userState, btcRate };
 };

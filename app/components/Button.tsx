@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { guess } from "../lib/action";
+import { guess } from "../lib/game";
 
 interface Props {
     direction: 'Up' | 'Down';
