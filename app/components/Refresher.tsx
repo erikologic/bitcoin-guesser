@@ -9,7 +9,7 @@ export const Refresher = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
           router.refresh();
-        }, 1 * 1000); // TODO 3 secs
+        }, 3 * 1000);
         return () => clearTimeout(timer);
       }, );
 
