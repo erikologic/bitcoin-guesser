@@ -5,6 +5,7 @@ import { Refresher } from "./components/Refresher";
 import { getState } from "./lib/game";
 
 import { Andika, Roboto_Mono } from "next/font/google";
+import { UnresolvedGuess } from "./components/UnresolvedGuess";
 
 const andika = Andika({
   subsets: ['latin'],
@@ -18,10 +19,11 @@ const robotoMono = Roboto_Mono({
   weight: '400',
 })
 
-const formatRate = (rate: string) => parseFloat(rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+export const formatRate = (rate: string) => "$ " + parseFloat(rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 
 export default async function Home() {
   const {userState, btcRate} = await getState()
+
   return (
     <>
       <Refresher />
@@ -40,7 +42,7 @@ export default async function Home() {
                   height={24}
                   priority
                 />
-              <div className="ml-2 text-2xl">$ {formatRate(btcRate.rate)}</div>
+              <div className="ml-2 text-2xl">{formatRate(btcRate.rate)}</div>
             </div>
             <div className={`${robotoMono.className} uppercase text-xs text-orange-200 pt-2`}>
               {new Date(btcRate.timestamp).toISOString()}
@@ -54,13 +56,7 @@ export default async function Home() {
         </div>
         <hr className="w-2/5 border-gray-700 my-4" />
 
-        {userState.guess.type === "unresolved" && <>
-          <section role="status" aria-label="Guess">
-            Your guess: {userState.guess.direction} <br />
-            Rate: {userState.guess.rate} <br />
-            Will resolve at: {new Date(userState.guess.timestamp).toLocaleString()} <br />
-          </section>
-        </>}
+        {userState.guess.type === "unresolved" && <UnresolvedGuess guess={userState.guess} />}
         {(userState.guess.type === "resolved" && userState.guess.wasCorrect) && <>
           <section role="status" aria-label="Guess">
             Good Job! Your guess was correct! <br />
@@ -71,15 +67,15 @@ export default async function Home() {
             Oh snaps! Your guess was uncorrect! <br />
           </section>
         </>}
-        {userState.guess.type !== "unresolved" ? <>
-        <div className="flex flex-col items-center">
-          <h2>Guess where is going to move next?</h2>
-          <div className="flex justify-between space-x-4 mt-2">
-            <Button direction="Down" />
-            <Button direction="Up" />
+        {userState.guess.type !== "unresolved" &&
+          <div className="flex flex-col items-center">
+            <h2>Guess where is going to move next?</h2>
+            <div className="flex justify-between space-x-4 mt-2">
+              <Button direction="Down" />
+              <Button direction="Up" />
+            </div>
           </div>
-        </div>
-        </> : <div>Waiting for the guess to resolve...</div>}
+        }
         
       </main>
     </>

@@ -24,7 +24,7 @@ test("the app", async ({ page, browser }) => {
   // AND they can see the current BTC price
   await setBitcoin({ data: { rateUsd: "100000" }, timestamp: null });
   await expect(
-    page.getByRole("status", { name: "Price" }).getByText("100000")
+    page.getByRole("status", { name: "Price" }).getByText("100,000.00")
   ).toBeVisible();
 
   // AND the player can make a guess if the price will go up or down
@@ -47,8 +47,12 @@ test("the app", async ({ page, browser }) => {
   await expect(page.getByRole("button", { name: "Down" })).not.toBeVisible();
 
   // AND they will be told the guess that they made
-  await expect(page.getByRole("status", { name: "Guess" }).getByText("Up")).toBeVisible();
-  await expect(page.getByRole("status", { name: "Guess" }).getByText("99")).toBeVisible();
+  await expect(
+    page.getByRole("status", { name: "Guess" }).getByText("Up")
+  ).toBeVisible();
+  await expect(
+    page.getByRole("status", { name: "Guess" }).getByText("99")
+  ).toBeVisible();
 
   // WHEN 60 seconds have passed since the guess was made but the price hasn't changed
   await setBitcoin({
@@ -64,12 +68,14 @@ test("the app", async ({ page, browser }) => {
   });
 
   // THEN the player will be told they were correct
-  await expect(page.getByRole("status", { name: "Guess" }).getByText("Good Job!")).toBeVisible();
+  await expect(
+    page.getByRole("status", { name: "Guess" }).getByText("Good Job!")
+  ).toBeVisible();
 
   // AND their score will be 1
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("1")
-  ).toBeVisible();  
+  ).toBeVisible();
 
   // AND the player can make a new guess
   await expect(page.getByRole("button", { name: "Up" })).toBeVisible();

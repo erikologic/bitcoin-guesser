@@ -1,24 +1,13 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { guess } from "../lib/game";
 import clsx from 'clsx';
+import { guess } from "../lib/game";
+import { ArrowUp, ArrowDown } from "./Arrow";
 
 interface Props {
     direction: 'Up' | 'Down';
 }
-
-const ArrowDown = () => (
-    <svg  className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25" />
-    </svg>
-)
-
-const ArrowUp = () => (
-    <svg  className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
-    </svg>
-)
 
 export const Button = ({direction}: Props) => {
     const router = useRouter();
