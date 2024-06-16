@@ -105,4 +105,24 @@ test("the app", async ({ page, browser }) => {
   await expect(
     page.getByRole("status", { name: "Score" }).getByText("1")
   ).toBeVisible();
+
+  // GIVEN player 1 makes a guess the price will go down
+  await page.getByRole("button", { name: "Down" }).click();
+
+  // WHEN time pass and price goes up
+  await page.waitForTimeout(3000);
+  await setBitcoin({
+    data: { rateUsd: "999999" },
+    timestamp: Date.now() + 61_000 * 2,
+  });
+
+  // THEN player 1 will be told they were incorrect
+  await expect(
+    page.getByRole("status", { name: "Guess" }).getByText("Oh snaps!")
+  ).toBeVisible();
+
+  // AND their score will go down to 0
+  await expect(
+    page.getByRole("status", { name: "Score" }).getByText("0")
+  ).toBeVisible();
 });
