@@ -48,6 +48,7 @@ test("the app", async ({ page, browser }) => {
 
   // AND they will be told the guess that they made
   await expect(page.getByRole("status", { name: "Guess" }).getByText("Up")).toBeVisible();
+  await expect(page.getByRole("status", { name: "Guess" }).getByText("99")).toBeVisible();
 
   // WHEN 60 seconds have passed since the guess was made but the price hasn't changed
   await setBitcoin({
