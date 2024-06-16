@@ -6,6 +6,8 @@ import { getState } from "./lib/game";
 
 import { Andika, Roboto_Mono } from "next/font/google";
 import { UnresolvedGuess } from "./components/UnresolvedGuess";
+import { ResolvedGuess } from "./components/ResolvedGuess";
+import { formatRate } from "./lib/utils";
 
 const andika = Andika({
   subsets: ['latin'],
@@ -19,10 +21,8 @@ const robotoMono = Roboto_Mono({
   weight: '400',
 })
 
-export const formatRate = (rate: string) => "$ " + parseFloat(rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-
 export default async function Home() {
-  const {userState, btcRate} = await getState()
+  const {userState, btcRate} = await getState();
 
   return (
     <>
@@ -57,16 +57,12 @@ export default async function Home() {
         <hr className="w-2/5 border-gray-700 my-4" />
 
         {userState.guess.type === "unresolved" && <UnresolvedGuess guess={userState.guess} />}
-        {(userState.guess.type === "resolved" && userState.guess.wasCorrect) && <>
-          <section role="status" aria-label="Guess">
-            Good Job! Your guess was correct! <br />
-          </section>
-        </>}  
-        {(userState.guess.type === "resolved" && !userState.guess.wasCorrect) && <>
-          <section role="status" aria-label="Guess">
-            Oh snaps! Your guess was uncorrect! <br />
-          </section>
-        </>}
+        {(userState.guess.type === "resolved") && 
+          <>
+            <ResolvedGuess guess={userState.guess} />
+            <hr className="w-2/5 border-gray-700 my-4" />
+          </>
+        }  
         {userState.guess.type !== "unresolved" &&
           <div className="flex flex-col items-center">
             <h2>Guess where is going to move next?</h2>

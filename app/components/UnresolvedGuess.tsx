@@ -1,5 +1,5 @@
 import { UnresolvedGuess as IUnresolvedGuess } from "../lib/types";
-import { formatRate } from "../page";
+import { formatRate } from "../lib/utils";
 import { ArrowUp, ArrowDown } from "./Arrow";
 
 export const UnresolvedGuess = ({ guess }: { guess: IUnresolvedGuess; }) => {
