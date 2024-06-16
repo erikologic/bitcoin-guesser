@@ -27,9 +27,10 @@ export default async function Home() {
   return (
     <>
       <Refresher />
-      <header className="flex flex-col justify-center items-center pt-6 ">
-        <h1 className={`${andika.className} uppercase text-4xl text-orange-300 pb-5 `}>Bitcoin Guesser</h1>
-        <hr className="w-2/5 border-gray-700 mt-1 mb-5" />
+      <header className="flex flex-col justify-center items-center mt-6 ">
+        <h1 className={`${andika.className} uppercase text-4xl text-orange-300 m3-4`}>Bitcoin Guesser</h1>
+        <p className="text-sm mb-5 mx-6">Guess how the BTC price will move in the next 60 secs!</p>
+        <hr className="w-2/5 border-gray-700 mb-5" />
       </header>
       
       <main className="flex min-h-screen flex-col items-center justify-start">
