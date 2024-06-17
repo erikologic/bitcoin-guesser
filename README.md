@@ -8,7 +8,7 @@ A web app that allows users to make guesses on whether the market price of Bitco
 - TypeScript
 - Tailwind CSS
 - Playwright
-- AWS (API GW, Lambda, DDB) + SST (Serverless Stack Toolkit)
+- AWS (Cloudfront, Lambda, DDB) + SST (Serverless Stack Toolkit)
 - CoinCap API
 - GitHub Actions
 - Codespace
@@ -97,6 +97,19 @@ Note:
   - Unzip the file.
   - Run `npx playwright show-report ~/Download/playwright-report/` (or the path where you unzipped the report).
 
-## Read the ADR
+## How does the app work?
+
+- The user navigates to the home page.
+- Cloudfront invokes the Lambda which will run the Next.js server.
+- Middleware checks if the user has a cookie. If not, it creates a new id cookie on the user browser
+- The Next.js server renders the home page - most of the app is based on Server Components.
+- Every updated rate, client-side we trigger a soft refresh, which results in updating all the Server Components, including those with the game state, score and BTC price.
+- The user makes a guess: this is a Client Component triggering a Server Action.
+- The guess is stored in DynamoDB together with the timestamp.
+- The user can see how long till the guess resolves.
+- After a minute, server-side logic will resolve the guess, overwriting the DDB guess item with a different payload, and the score item with the current one.
+- This new payload will drive UI updates to show success/failure, update the score and allow for another go.
+
+## ADR
 
 I have documented my initial approach and the decisions I made in the ADR. You can find it in [ADR.md](docs/ADR.md).
