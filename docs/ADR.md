@@ -133,7 +133,7 @@ Even without triggering a proper DDoS, an attacker could still e.g. crete havoc 
 The initial mitigation plan would be to create some monitoring, manually finding and banning abusers. Also, will investigate on how to put account spending limits.  
 ATM I don't have anything better and I need to invest some time in understanding how to implement a better mitigation plan that wouldn't require much manual intervention.  
 
-RETROSPECTIVE
+RETROSPECTIVE  
 I just found out that this is a major concern.  
 The app is deployed on AWS, with regional Lambdas being invoked by a CloudFront distribution.  
 I could turn on the AWS WAF, but that's expensive.  
@@ -152,7 +152,7 @@ It is also important to prevent broken code from reaching production and ensure 
 SOLUTION SPACE  
 Given the time constraints, I will focus on E2E testing in a local environment, mocking the cryptocurrency service. After deployment, consider adding smoke testing to ensure the app is working as expected.
 
-RETROSPECTIVE
+RETROSPECTIVE  
 Initially, I attempted to use a combination of E2E and inside-out TDD (Test-Driven Development) but encountered challenges with integrating these approaches with Server Components.  
 Eventually, I settled on E2E testing the entire user journey, which proved valuable in understanding the behavior of the app (framework + custom code) and refactoring complex pieces (moving components between server and client, changing 2 DDB GetItems in 1 Query).  
 
@@ -163,11 +163,11 @@ _What are the availability requirements of the system?_
 PROBLEM SPACE  
 The web app should be available 24/7.
 
-SOLUTION SPACE
+SOLUTION SPACE  
 A serverless solution is well-suited for this requirement.  
 If self-managed, consider redundancy with multiple availability zones (AZs) to ensure high availability.
 
-RETROSPECTIVE
+RETROSPECTIVE  
 The app is currently deployed as a serverless solution and is highly available.  
 
 ### Performance
@@ -185,7 +185,7 @@ Any serverless solution would be sufficient for this delivery.
 However, it is important to consider the costs of scaling the system - or e.g. be at risk of finding us with a [96k/weekly bill](https://www.reddit.com/r/sveltejs/comments/1da5ywp/caras_96k_wk_vercel_bill_has_shook_me/)...  
 The interaction with the BTC/USD price service should also be optimized to avoid unnecessary requests.
 
-RETROSPECTIVE
+RETROSPECTIVE  
 I'm quite happy with the performances.  
 
 In terms of UI, is fairly lightweight, and because Server Components, the app is very performant:
@@ -204,13 +204,13 @@ _This is nice and scary, there are a number of moving parts supporting this on A
 
 _Can we understand what the system is doing internally? Can we monitor its outputs consistently?_
 
-PROBLEM SPACE
+PROBLEM SPACE  
 At a minimum, we should be able to determine if the app is live and usable - e.g. some Synthetic or Client side Error Monitoring.  
 Additional observability requirements include monitoring third-party services, detecting and mitigating attacks, analyzing web app usage quantitatively (metrics) and qualitatively (RUM), and observing backend performance and errors.  
 
 SOLUTION SPACE  
 Because of the PoC nature, I will just add Sentry if I have time
 
-RETROSPECTIVE
+RETROSPECTIVE  
 Due to time constraints, I did not have the opportunity to investigate adding Sentry to this project.  
 
