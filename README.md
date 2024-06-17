@@ -37,7 +37,8 @@ To run the project locally, follow these steps:
   - `npm run dev:local-ddb`: Run DynamoDB Local.
   - `npm run dev:local-btc`: Run the BTC price server simulator.
 - Open [http://localhost:3000](http://localhost:3000) in your browser to see the local web app.
-- Run `test:e2e:ui` to run the Playwright tests locally.
+- Run `test:e2e:ui` to run the Playwright tests locally.  
+_As outlined in the ADR, the app is intended to be TDD'd from the E2E tests._
 
 Notes:
 
