@@ -51,6 +51,8 @@ export default {
       const site = new NextjsSite(stack, "site", {
         bind: [table],
         environment: { COINCAP_API_KEY: process.env.COINCAP_API_KEY! },
+        warm: 0,
+        memorySize: "200 MB",
       });
 
       stack.addOutputs({

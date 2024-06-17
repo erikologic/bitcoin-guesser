@@ -1,5 +1,7 @@
 import { BitcoinRate } from "./types";
 
+const REVALIDATE_RATE = 1;
+
 const options: RequestInit = {
   method: "GET",
   redirect: "follow",
@@ -7,7 +9,7 @@ const options: RequestInit = {
     "Accept-Encoding": "gzip",
     Authorization: `Bearer ${process.env.COINCAP_API_KEY}`,
   },
-  next: {revalidate: 3}
+  next: { revalidate: REVALIDATE_RATE },
 };
 
 const endpoint =

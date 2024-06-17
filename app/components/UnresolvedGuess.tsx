@@ -3,7 +3,7 @@ import { formatRate } from "../lib/utils";
 import { ArrowUp, ArrowDown } from "./Arrow";
 
 export const UnresolvedGuess = ({ guess }: { guess: IUnresolvedGuess; }) => {
-  const remainingSecs = Math.floor((Date.now() - guess.timestamp) / 1000);
+  const remainingSecs = Math.floor(((guess.timestamp + 60_000) - Date.now()) / 1000);
   const isUp = guess.direction === 'Up';
 
   return <section role="status" aria-label="Guess" className="flex flex-col items-center">

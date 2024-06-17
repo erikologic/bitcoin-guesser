@@ -21,6 +21,7 @@
 	"features": {
 		// Sonarlint
 		"ghcr.io/devcontainers/features/java:1": {},
+		"ghcr.io/devcontainers/features/git-lfs:1": {},
         "ghcr.io/devcontainers/features/aws-cli:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 
@@ -28,7 +29,6 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"updateContentCommand": "npm install && npx playwright install --with-deps",
-	// "postAttachCommand": "pnpm run dev", // requires credentials to be available at boot time!
 	
 
 	// Configure tool-specific properties.

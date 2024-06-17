@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "sst bind --stage node next dev",
+    "dev": "sst bind --stage prod next dev",
     "dev:local": "concurrently --names 'NEXT,DDB,BTC' -c 'auto' 'npm run dev:local-next' 'npm run dev:local-ddb' 'npm run dev:local-btc'",
     "dev:local-next": "LOCAL=true next dev",
     "dev:local-ddb": "./localDev/local-ddb.sh",
