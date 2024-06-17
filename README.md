@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bitcoin Guesser
 
-## Getting Started
+A web app that allows users to make guesses on whether the market price of Bitcoin (BTC/USD) will be higher or lower after one minute.
 
-First, run the development server:
+## Stack
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Playwright
+- AWS (API GW, Lambda, DDB) + SST (Serverless Stack Toolkit)
+- CoinCap API
+- GitHub Actions
+- Codespace
+
+## Onboarding
+
+To get started with the project, follow these steps:
+
+Codespace:
+
+- Fork this repository.
+- Start a Codespace on the repository (you may need to increase the vCPUs).
+
+Local:
+
+- Clone this repository.
+- Install the dependencies with `npm install && npx playwright install --with-deps`.
+
+## Local Development
+
+To run the project locally, follow these steps:
+
+- Run `npm run dev:local` to start all the development servers...
+- ...or run each server in its own terminal:
+  - `npm run dev:local-next`: Run Next.js for local use.
+  - `npm run dev:local-ddb`: Run DynamoDB Local.
+  - `npm run dev:local-btc`: Run the BTC price server simulator.
+- Open [http://localhost:3000](http://localhost:3000) in your browser to see the local web app.
+- Run `test:e2e:ui` to run the Playwright tests locally.
+
+Notes:
+
+- `test:unit` would run Jest, but there are no unit tests - only E2E.
+- When DynamoDB Local is stopped, the database content is lost.
+- The BTC price simulator is an Express server.  
+It could have been a bit smarter, such as being able to track each browser independently, but its implementation is sufficient for now.  
+It has 2 endpoints:
+  - `GET /bitcoin`: Returns the current price of Bitcoin, with the same payload as the CoinCap API.
+  - `POST /bitcoin`: Reads a `Partial<CoinCapResponse>` and merges it with the "store" content, allowing changing the GET endpoint behavior.  
+
+## Remote Development
+
+To run the app with the real DynamoDB and CoinCap API, use the following command:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This command requires setting up the right environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+export AWS_ACCESS_KEY_ID=AKIAxxxxx
+export AWS_SECRET_ACCESS_KEY=xxxx
+export AWS_DEFAULT_REGION=eu-west-1
+export COINCAP_API_KEY="-----BEGIN EC PRIVATE KEY-----\nxxxxxxxxxx-----END EC PRIVATE KEY-----\n"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Note: I usually work in Enterprise AWS environments with SSO and multiple accounts. My usual "assume credentials" pattern involves using `aws-sso-login`. However, this approach does not work in a Codespace environment. Exporting hardcoded credentials is a suboptimal solution, and if you have a better way to assume roles, it should work but is not tested.
 
-## Learn More
+## CI/CD
 
-To learn more about Next.js, take a look at the following resources:
+The SST stack includes setting up the AWS IAM Identity Provider and Role so that GitHub Actions can assume a "deployer" role in AWS using OpenID Connect.
+On first time, run a deploy from the local environment to create the bootstrap stack in your AWS account:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Edit the `github` object in `sst.config.ts` to match your organization/repo.
+- Set the environment variables as described in the "Remote Development" section.
+- Run `npm run deploy:prod` to deploy from your local environment.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+In the GitHub repository settings:
 
-## Deploy on Vercel
+- Set the following secrets:
+  - AWS_ACCOUNT_ID: your AWS account ID
+  - COINCAP_API_KEY: your CoinCap API key (same as above)
+- Turn on GHA
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If the deploy hasn't started manually, trigger it manually or push a commit to the main branch.  
+The following will happen in the pipeline:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Run the E2E tests using Playwright.
+- Deploy the SST stack.
+
+Note:
+
+- To inspect the report from a Playwright test run in GHA:
+  - Download the `playwright-report` artifacts from the GHA run.
+  - Unzip the file.
+  - Run `npx playwright show-report ~/Download/playwright-report/` (or the path where you unzipped the report).
+
+## Read the ADR
+
+I have documented my initial approach and the decisions I made in the ADR. You can find it in [ADR.md](docs/ADR.md).
